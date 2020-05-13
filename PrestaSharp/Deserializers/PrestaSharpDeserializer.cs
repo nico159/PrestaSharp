@@ -27,12 +27,23 @@ namespace Bukimedia.PrestaSharp.Deserializers
             Culture = CultureInfo.InvariantCulture;
         }
 
+        private static string CleanContent(string content)
+        {
+            var index = content.IndexOf('<');
+            if (index > 0)
+            {
+                return content.Substring(index, content.Length - index);
+            }
+            
+            return content;
+        }
+
         public virtual T Deserialize<T>(IRestResponse response)
         {
             if (string.IsNullOrEmpty(response.Content))
                 return default(T);
 
-            var doc = XDocument.Parse(response.Content);
+            var doc = XDocument.Parse(CleanContent(response.Content));
             var root = doc.Root;
             if (RootElement.HasValue() && doc.Root != null)
             {
